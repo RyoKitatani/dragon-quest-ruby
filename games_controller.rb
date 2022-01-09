@@ -1,4 +1,7 @@
+require './message_dialog.rb'
+
 class GamesController
+  include MessageDialog
 
   EXP_CONSTANT = 2
   GOLD_CONSTANT = 2
@@ -12,9 +15,9 @@ class GamesController
       break if battle_end?
       @monster.attack(@brave)
       break if battle_end?
-
-      battle_judgement
     end
+
+    battle_judgement
   end
 
   private
@@ -24,7 +27,7 @@ class GamesController
     @monster = params[:monster]
   end
 
-  def battle_win?
+  def brave_win?
     @brave.hp > 0
   end
 
@@ -33,21 +36,22 @@ class GamesController
   end
 
   def battle_judgement
-    if battle_win?
-      result = calculate_of_exp_gold
-      puts "#{@brave.name}は戦いに勝利した"
-      puts "#{result[:exp]}の経験値と#{result[:gold]}ゴールドを獲得した!"
-    else
-      puts "#{@brave.name}は戦いに負けた"
-      puts "目の前が真っ暗になった......"
-    end
+    result = calculate_of_exp_gold
+
+    end_message(result)
   end
 
   def calculate_of_exp_gold
-    exp = (@monster.offense + @monster.defense) * EXP_CONSTANT
-    gold = (@monster.offense + @monster.defense) * GOLD_CONSTANT
-    result = {exp: exp, gold: gold}
+    if brave_win?
+      brave_win_flag = true
+      exp = (@monster.offense + @monster.defense) * EXP_CONSTANT
+      gold = (@monster.offense + @monster.defense) * GOLD_CONSTANT
+    else
+      brave_win_flag = false
+      exp = 0
+      gold = 0
+    end
 
-    result
+    {brave_win_flag: brave_win_flag, exp: exp, gold: gold}
   end
 end

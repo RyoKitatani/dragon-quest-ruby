@@ -1,3 +1,5 @@
+require './character.rb'
+
 class Monster < Character
   POWER_UP_RATE = 1.5
   CALC_HALF_HP = 0.5
@@ -13,12 +15,13 @@ class Monster < Character
       @transform_flag = true
       transform
     end
-    puts "#{@name}の攻撃"
+
 
     damage = calculate_damage(brave)
     cause_damage(target: brave, damage: damage)
 
-    puts "#{brave.name}の残りHPは#{brave.hp}だ"
+    attack_message
+    damage_message(target: brave, damage: damage)
   end
 
   def calculate_damage(target)
@@ -31,8 +34,6 @@ class Monster < Character
 
     target.hp -= damage
     target.hp = 0 if target.hp < 0
-
-    puts "#{target.name}は#{damage}のダメージを受けた"
   end
 
 
@@ -41,10 +42,7 @@ class Monster < Character
   def transform
     transform_name = "ドラゴン"
 
-    puts <<~TEXT
-    #{@name}は怒っている
-    #{@name}は#{transform_name}に変身した
-    TEXT
+    transform_message(origin_name: @name, transform_name: transform_name)
     @offense *= POWER_UP_RATE
     @name = transform_name
   end
